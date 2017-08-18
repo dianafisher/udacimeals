@@ -52,7 +52,7 @@ function calendar (state = initialCalendarState, action) {
         ...state,
         [day]: {
           ...state[day],
-          [mail]: recipe.label,
+          [meal]: recipe.label,
         }
       }
     case REMOVE_FROM_CALENDAR:
