@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { addRecipe, removeFromCalendar } from '../actions';
+import { capitalize } from '../utils/helpers';
+import CalendarIcon from 'react-icons/lib/fa/calendar-plus-o';
 
 class App extends Component {
   // dispatch an action
@@ -40,7 +42,7 @@ function mapDispatchToProps (dispatch) {
 
 // map our redux state to our component props
 // this function lets connect() know how to map the state into the component's list of props.
-function mapStateToProps (calendar) {
+function mapStateToProps ({ calendar, food }) {
   const dayOrder = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 
   return {
@@ -48,7 +50,7 @@ function mapStateToProps (calendar) {
       day,
       meals: Object.keys(calendar[day]).reduce((meals, meal) => {
         meals[meal] = calendar[day][meal]
-        ? calendar[day][meal]
+        ? food[calendar[day][meal]]
         : null
 
         return meals
