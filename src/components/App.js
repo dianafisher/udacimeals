@@ -1,7 +1,16 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { addRecipe, removeFromCalendar } from '../actions';
 
 class App extends Component {
+  // dispatch an action
+  // doThing = () => {
+  //   this.props.dispatch(addRecipe({}))
+  // }
+
+  doThing = () => {
+    this.props.selectRecipe({})
+  }
 
   render() {
     console.log('Props', this.props);
@@ -13,7 +22,24 @@ class App extends Component {
   }
 }
 
+/*
+When you connect a component, that component will automatically be passed
+Redux's dispatch() method.
+
+The whole point of mapDispatchToProps() is to make it so you can
+bind dispatch() to your action creators before they ever hit
+your component.
+*/
+
+function mapDispatchToProps (dispatch) {
+  return {
+    selectRecipe: (data) => dispatch(addRecipe(data)),
+    remove: (data) => dispatch(removeFromCalendar(data))
+  }
+}
+
 // map our redux state to our component props
+// this function lets connect() know how to map the state into the component's list of props.
 function mapStateToProps (calendar) {
   const dayOrder = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 
@@ -31,4 +57,4 @@ function mapStateToProps (calendar) {
   }
 }
 
-export default connect(mapStateToProps)(App);  // connect returns a function to which we pass App into.
+export default connect(mapStateToProps, mapDispatchToProps)(App);  // connect returns a function to which we pass App into.  connect() connects a react component to the Redux store.
