@@ -8,6 +8,7 @@ import ArrowRightIcon from 'react-icons/lib/fa/arrow-circle-right'
 import Loading from 'react-loading';
 import { fetchRecipes } from '../utils/api';
 import FoodList from './FoodList';
+import ShoppingList from './ShoppingList';
 
 class App extends Component {
   // dispatch an action
@@ -21,7 +22,8 @@ class App extends Component {
     meal: null,
     day: null,
     food: null,
-    loadingFood: false
+    loadingFood: false,
+    ingredientsModalOpen: false
   }
 
   openFoodModal = ({ meal, day }) => {
@@ -57,13 +59,39 @@ class App extends Component {
       })))
   }
 
+  openIngredientsModal = () => this.setState(() => ({ ingredientsModalOpen: true }))
+  closeIngredientsModal = () => this.setState(() => ({ ingredientsModalOpen: false }))
+  generateShoppingList = () => {
+    return this.props.calendar.reduce((result, { meals }) => {
+      const { breakfast, lunch, dinner } = meals
+
+      breakfast && result.push(breakfast)
+      lunch && result.push(lunch)
+      dinner && result.push(dinner)
+
+      return result
+    }, [])
+    .reduce((ings, { ingredientLines }) => ings.concat(ingredientLines), [])
+  }
+
+
   render() {
-    const { foodModalOpen, loadingFood, food } = this.state;
+    const { foodModalOpen, loadingFood, food, ingredientsModalOpen } = this.state;
     const { calendar, remove, selectRecipe } = this.props;
     const mealOrder = ['breakfast', 'lunch', 'dinner'];
 
     return (
       <div className='container'>
+
+        <div className='nav'>
+          <h1 className='header'>UdaciMeals</h1>
+          <button
+            className='shopping-list'
+            onClick={this.openIngredientsModal}>
+            Shopping List
+          </button>
+        </div>
+
         <ul className='meal-types'>
           { mealOrder.map((mealType) => (
             <li key={mealType} className='subheader'>
@@ -121,8 +149,7 @@ class App extends Component {
                   ></input>
                   <button
                     className='icon-btn'
-                    onClick={this.searchFood}
-                  >
+                    onClick={this.searchFood}>
                     <ArrowRightIcon size={30} />
                   </button>
                 </div>
@@ -135,10 +162,21 @@ class App extends Component {
                     }}
                   />
                 )}
-              </div>
-              }
+                </div>
+            }
           </div>
         </Modal>
+
+        <Modal
+          className='modal'
+          overlayClassName='overlay'
+          isOpen={ingredientsModalOpen}
+          onRequestClose={this.closeIngredientsModal}
+          contentLabel='Modal'
+        >
+          {ingredientsModalOpen && <ShoppingList list={this.generateShoppingList()}/>}
+        </Modal>
+        
       </div>
     );
   }
